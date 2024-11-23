@@ -5,9 +5,20 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://your-domain.com"),
   title: "Donny's Photography",
   description: "Photography Portfolio",
+  openGraph: {
+    type: "website",
+    title: "Donny | Photography Portfolio",
+    description:
+      "A collection of beautiful photographs across various categories",
+  },
 }
+
+export const dynamic = "force-dynamic"
+export const runtime = "edge"
+export const preferredRegion = "auto"
 
 export default function RootLayout({
   children,
