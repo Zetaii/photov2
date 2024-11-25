@@ -4,7 +4,7 @@ import { motion, useAnimation } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { ANIMATION_SETTINGS } from "../constants"
-import { useState, memo, useEffect, useRef } from "react"
+import { useState, memo, useEffect, useRef, useMemo } from "react"
 
 interface ImageCardProps {
   id: string
@@ -31,8 +31,8 @@ const ImageCard = memo(function ImageCard({
   const controls = useAnimation()
   const positionRef = useRef(initialPosition)
 
-  // Buffer zone size
-  const BUFFER_SIZE = ANIMATION_SETTINGS.imageSize * 0.5
+  // Memoize buffer size
+  const BUFFER_SIZE = useMemo(() => ANIMATION_SETTINGS.imageSize * 0.5, [])
 
   // Handle mounting
   useEffect(() => {
@@ -85,7 +85,7 @@ const ImageCard = memo(function ImageCard({
         cancelAnimationFrame(animationFrameId)
       }
     }
-  }, [controls, direction.x, isMounted])
+  }, [controls, direction.x, isMounted, BUFFER_SIZE])
 
   if (!isMounted) return null
 
