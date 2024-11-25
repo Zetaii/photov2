@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "ANALYZE=true next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prod-build": "NODE_ENV=production next build"
+    "analyze": "set ANALYZE=true && next build"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
