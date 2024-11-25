@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
@@ -19,43 +19,49 @@ export function MobileCarousel({ categories }: MobileCarouselProps) {
   const [direction, setDirection] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
 
+  const updateCarousel = (newDirection: number, newIndex: number) => {
+    setDirection(newDirection)
+    setCurrentIndex(newIndex)
+  }
+
   const handleDragEnd = (e: any, { offset, velocity }: any) => {
     const swipeThreshold = 5
     setIsDragging(false)
 
     if (Math.abs(offset.x) > swipeThreshold) {
       if (offset.x > 0) {
-        // Swiping right (previous)
-        if (currentIndex > 0) {
-          setDirection(-1)
-          setCurrentIndex(currentIndex - 1)
-        } else {
-          setDirection(-1)
-          setCurrentIndex(categories.length - 1)
-        }
+        const newIndex =
+          currentIndex <= 0 ? categories.length - 1 : currentIndex - 1
+        updateCarousel(-1, newIndex)
       } else {
-        // Swiping left (next)
-        if (currentIndex < categories.length - 1) {
-          setDirection(1)
-          setCurrentIndex(currentIndex + 1)
-        } else {
-          setDirection(1)
-          setCurrentIndex(0)
-        }
+        const newIndex =
+          currentIndex >= categories.length - 1 ? 0 : currentIndex + 1
+        updateCarousel(1, newIndex)
       }
     }
   }
 
   const handlePrevious = (e: React.MouseEvent) => {
     e.stopPropagation()
-    setDirection(-1)
-    setCurrentIndex((prev) => (prev <= 0 ? categories.length - 1 : prev - 1))
+    const newIndex =
+      currentIndex <= 0 ? categories.length - 1 : currentIndex - 1
+    updateCarousel(-1, newIndex)
   }
 
   const handleNext = () => {
-    setDirection(1)
-    setCurrentIndex((prev) => (prev >= categories.length - 1 ? 0 : prev + 1))
+    const newIndex =
+      currentIndex >= categories.length - 1 ? 0 : currentIndex + 1
+    updateCarousel(1, newIndex)
   }
+
+  useEffect(() => {
+    const nextIndex = (currentIndex + 1) % categories.length
+    const preloadImage = () => {
+      const img = document.createElement("img")
+      img.src = categories[nextIndex].coverImage
+    }
+    preloadImage()
+  }, [currentIndex, categories])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -78,6 +84,7 @@ export function MobileCarousel({ categories }: MobileCarouselProps) {
         style={{
           width: VIEWPORT_SIZE,
           height: VIEWPORT_SIZE,
+          position: "relative",
         }}
       >
         <AnimatePresence initial={false} custom={direction} mode="wait">
@@ -89,11 +96,21 @@ export function MobileCarousel({ categories }: MobileCarouselProps) {
             dragElastic={0.7}
             onDragStart={() => setIsDragging(true)}
             onDragEnd={handleDragEnd}
-            initial={{ x: direction > 0 ? VIEWPORT_SIZE : -VIEWPORT_SIZE }}
-            animate={{ x: 0 }}
-            exit={{ x: direction < 0 ? VIEWPORT_SIZE : -VIEWPORT_SIZE }}
+            initial={{
+              x: direction * VIEWPORT_SIZE,
+              opacity: 0,
+            }}
+            animate={{
+              x: 0,
+              opacity: 1,
+            }}
+            exit={{
+              x: -direction * VIEWPORT_SIZE,
+              opacity: 0,
+            }}
             transition={{
               x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
             }}
             className="absolute inset-0 cursor-grab active:cursor-grabbing touch-pan-x"
           >
@@ -101,25 +118,30 @@ export function MobileCarousel({ categories }: MobileCarouselProps) {
               <Link
                 href={`/album/${categories[currentIndex].id}`}
                 className={cn(
-                  "block w-full h-full",
+                  "block w-full h-full relative",
                   isDragging && "pointer-events-none"
                 )}
-                onClick={(e) => isDragging && e.preventDefault()}
               >
-                <Image
-                  src={categories[currentIndex].coverImage}
-                  alt={categories[currentIndex].title}
-                  width={VIEWPORT_SIZE}
-                  height={VIEWPORT_SIZE}
-                  className="object-cover"
-                  priority
-                  quality={90}
-                  style={{
-                    width: VIEWPORT_SIZE,
-                    height: VIEWPORT_SIZE,
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+                <div className="relative w-full h-full">
+                  <Image
+                    src={categories[currentIndex].coverImage}
+                    alt={categories[currentIndex].title}
+                    width={VIEWPORT_SIZE}
+                    height={VIEWPORT_SIZE}
+                    className="object-cover"
+                    priority={currentIndex === 0}
+                    loading={currentIndex === 0 ? "eager" : "lazy"}
+                    quality={60}
+                    sizes={`${VIEWPORT_SIZE}px`}
+                    style={{
+                      width: "auto",
+                      height: "auto",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+                </div>
               </Link>
             </div>
           </motion.div>
@@ -158,8 +180,8 @@ export function MobileCarousel({ categories }: MobileCarouselProps) {
           <button
             key={idx}
             onClick={() => {
-              setDirection(idx > currentIndex ? 1 : -1)
-              setCurrentIndex(idx)
+              const newDirection = idx > currentIndex ? 1 : -1
+              updateCarousel(newDirection, idx)
             }}
             className={cn(
               "h-2 rounded-full transition-all duration-300",
