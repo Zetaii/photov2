@@ -10,7 +10,6 @@ import { IoClose } from "react-icons/io5"
 import { PhotoCategory } from "../data/categories"
 import SimpleBar from "simplebar-react"
 import "simplebar-react/dist/simplebar.min.css"
-import Lenis from "lenis"
 
 interface Sidebar2Props {
   categories: PhotoCategory[]
