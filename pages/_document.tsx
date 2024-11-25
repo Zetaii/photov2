@@ -9,6 +9,7 @@ export default function Document() {
           href="https://images.unsplash.com"
           crossOrigin="anonymous"
         />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
       </Head>
       <body>
         <Main />
