@@ -1,24 +1,17 @@
-import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "arial"],
+})
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://your-domain.com"),
-  title: "Donny's Photography",
+export const metadata = {
+  title: "Donny",
   description: "Photography Portfolio",
-  openGraph: {
-    type: "website",
-    title: "Donny | Photography Portfolio",
-    description:
-      "A collection of beautiful photographs across various categories",
-  },
 }
-
-export const dynamic = "force-dynamic"
-export const runtime = "edge"
-export const preferredRegion = "auto"
 
 export default function RootLayout({
   children,
@@ -26,9 +19,43 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} overflow-x-hidden`}>
-        <div className="overflow-x-hidden">{children}</div>
+    <html lang="en" className={inter.className}>
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+          :root { 
+            --app-height: 100vh;
+            --footer-height: 300px;
+          }
+          body {
+            background-color: rgb(23, 23, 23);
+            color: rgb(255, 255, 255);
+          }
+          .critical-text {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+            opacity: 0.8;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+          }
+        `,
+          }}
+        />
+      </head>
+      <body
+        className="antialiased"
+        style={{
+          minHeight: "100vh",
+          overscrollBehavior: "none",
+        }}
+      >
+        {children}
       </body>
     </html>
   )
