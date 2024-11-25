@@ -1,5 +1,5 @@
 export const ANIMATION_SETTINGS = {
-  speed: 1.5,
+  speed: 0.5,
   interval: 1000 / 60,
   imageSize: 300,
   transitionDuration: 0.3,
