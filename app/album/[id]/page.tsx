@@ -12,15 +12,18 @@ export default function AlbumPage({ params }: { params: { id: string } }) {
   const album = albums.find((a) => a.id === baseId)
 
   useEffect(() => {
-    // Scroll to top when component mounts
+    // Immediate scroll to top
     window.scrollTo(0, 0)
 
-    // If using Lenis smooth scroll
+    // Handle Lenis scroll
     const lenis = (window as any).lenis
     if (lenis) {
-      lenis.scrollTo(0, { immediate: true })
+      // Use setTimeout to ensure this runs after route change
+      setTimeout(() => {
+        lenis.scrollTo(0, { immediate: true })
+      }, 0)
     }
-  }, [])
+  }, [params.id]) // Add params.id as dependency
 
   if (!album) {
     return (
