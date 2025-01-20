@@ -49,7 +49,13 @@ export default function Home() {
       <div className="relative min-h-screen bg-white">
         <Sidebar2 categories={INITIAL_CATEGORIES} />
 
-        <main className="relative pt-24 pb-32">
+        <main className="relative pt-8 pb-16">
+          <h1 className="text-5xl font-bold text-center mb-4 text-black">
+            <a href="/"> DONNY</a>
+          </h1>
+          <h2 className="text-xl font-bold text-center mb-16 text-black">
+            <a href="/contact"> CONTACT </a>
+          </h2>
           <div className="relative h-[2400px] mb-[100px] overflow-hidden">
             {INITIAL_CATEGORIES.map((category, index) => (
               <SlidingImage

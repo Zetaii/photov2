@@ -101,7 +101,6 @@ export default function Sidebar2({ categories }: Sidebar2Props) {
               <HiMenuAlt2 className="w-5 h-5" />
             )}
           </button>
-          <h1 className="text-2xl font-bold text-black pr-4">DONNY</h1>
         </div>
       </div>
 
