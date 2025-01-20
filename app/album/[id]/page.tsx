@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { albums } from "../../data/albums"
@@ -10,6 +10,17 @@ import { IoArrowBack, IoImages } from "react-icons/io5"
 export default function AlbumPage({ params }: { params: { id: string } }) {
   const baseId = params.id.split("-")[0]
   const album = albums.find((a) => a.id === baseId)
+
+  useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0)
+
+    // If using Lenis smooth scroll
+    const lenis = (window as any).lenis
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true })
+    }
+  }, [])
 
   if (!album) {
     return (
