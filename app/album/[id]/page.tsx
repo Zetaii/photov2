@@ -38,7 +38,7 @@ export default function AlbumPage({ params }: { params: { id: string } }) {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-black to-zinc-950">
+    <div className="min-h-screen bg-white to-zinc-950">
       {/* Fixed Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-5xl mx-auto px-6 py-4">
@@ -75,48 +75,10 @@ export default function AlbumPage({ params }: { params: { id: string } }) {
           >
             <div className="flex flex-col items-center gap-12">
               {/* Cover Image */}
-              <motion.div
-                className="w-[300px] aspect-square rounded-2xl overflow-hidden
-                  shadow-2xl shadow-black/50 border border-white/10 group"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Image
-                  src={album.coverImage}
-                  alt={album.title}
-                  width={300}
-                  height={300}
-                  className="object-cover w-full h-full transition-all duration-500
-                    group-hover:scale-110 group-hover:brightness-110"
-                  priority
-                />
-              </motion.div>
 
               {/* Album Details */}
               <div className="flex flex-col items-center space-y-6 max-w-2xl">
-                <div>
-                  <h2
-                    className="text-4xl font-bold mb-4 bg-clip-text text-transparent 
-                    bg-gradient-to-r from-white to-white/70"
-                  >
-                    {album.title}
-                  </h2>
-                  <p className="text-lg text-white/70 leading-relaxed">
-                    {album.description}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-4 mb-2">
-                  <div
-                    className="flex items-center gap-2 px-4 py-2 mb-2 rounded-xl 
-                    bg-white/5 border border-white/10"
-                  >
-                    <IoImages className="w-5 h-5 text-white/70" />
-                    <span className="text-white/70">
-                      {album.images.length} Photos
-                    </span>
-                  </div>
-                </div>
+                <div className="flex items-center gap-4 mb-2"></div>
               </div>
             </div>
           </motion.div>

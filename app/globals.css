@@ -3,46 +3,27 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-rgb: 17, 17, 17;
-  --header-height: 96px;
-  --footer-height: 300px;
+  --primary-color: #ffffff;
+  --secondary-color: #000000;
 }
 
 html,
 body {
-  height: 100vh;
+  height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  background: rgb(var(--background-rgb));
-  color: rgb(var(--foreground-rgb));
+  background: var(--primary-color);
+  color: var(--secondary-color);
 }
 
-#__next {
-  height: 100vh;
+body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Force layout stability */
-* {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-.content-wrapper {
-  flex: 1;
-  position: relative;
-  margin-top: var(--header-height);
-  margin-bottom: var(--footer-height);
-  contain: paint layout;
-}
-
-@supports (-webkit-touch-callout: none) {
-  .content-wrapper {
-    /* Fix for iOS Safari */
-    height: -webkit-fill-available;
-  }
+main {
+  flex: 1 0 auto;
 }

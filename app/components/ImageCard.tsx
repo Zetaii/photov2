@@ -1,146 +1,70 @@
 "use client"
 
-import { motion, useAnimation } from "framer-motion"
+import { motion, useInView } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ANIMATION_SETTINGS } from "../constants"
-import { useState, memo, useEffect, useRef, useMemo } from "react"
+import { memo, useRef } from "react"
 
 interface ImageCardProps {
   id: string
   title: string
   coverImage: string
-  initialPosition: { x: number; y: number }
-  direction: { x: number; y: number }
   hoveredId: string | null
   onHover: (id: string) => void
+  initialX: number
+  row: number
 }
 
 const ImageCard = memo(function ImageCard({
   id,
   title,
   coverImage,
-  initialPosition,
-  direction,
   hoveredId,
   onHover,
+  initialX,
+  row,
 }: ImageCardProps) {
   const isHovered = hoveredId === id
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
-  const controls = useAnimation()
-  const positionRef = useRef(initialPosition)
-
-  // Memoize buffer size
-  const BUFFER_SIZE = useMemo(() => ANIMATION_SETTINGS.imageSize * 0.5, [])
-
-  // Handle mounting
-  useEffect(() => {
-    setIsMounted(true)
-    return () => setIsMounted(false)
-  }, [])
-
-  // Animation loop
-  useEffect(() => {
-    if (!isMounted) return
-
-    let animationFrameId: number
-
-    const animate = () => {
-      let newX = positionRef.current.x + direction.x * ANIMATION_SETTINGS.speed
-
-      // Handle wrap-around with buffer zones
-      if (direction.x > 0) {
-        // Moving right
-        if (newX >= window.innerWidth + BUFFER_SIZE) {
-          // When completely off screen to the right
-          newX = -ANIMATION_SETTINGS.imageSize - BUFFER_SIZE
-        }
-      } else if (direction.x < 0) {
-        // Moving left
-        if (newX <= -ANIMATION_SETTINGS.imageSize - BUFFER_SIZE) {
-          // When completely off screen to the left
-          newX = window.innerWidth + BUFFER_SIZE
-        }
-      }
-
-      positionRef.current = {
-        x: newX,
-        y: positionRef.current.y,
-      }
-
-      try {
-        controls.set(positionRef.current)
-      } catch (error) {
-        // Silently handle any errors
-      }
-
-      animationFrameId = requestAnimationFrame(animate)
-    }
-
-    animationFrameId = requestAnimationFrame(animate)
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId)
-      }
-    }
-  }, [controls, direction.x, isMounted, BUFFER_SIZE])
-
-  if (!isMounted) return null
+  const ref = useRef(null)
+  const isInView = useInView(ref, {
+    margin: "100px 0px",
+    once: true,
+    amount: 0.1,
+  })
 
   return (
     <motion.div
-      animate={controls}
-      initial={initialPosition}
+      ref={ref}
+      className="absolute w-[400px] aspect-[4/5]"
       style={{
-        position: "absolute",
-        width: ANIMATION_SETTINGS.imageSize,
-        height: ANIMATION_SETTINGS.imageSize,
-        willChange: "transform",
+        top: `${row * 600}px`,
+        zIndex: isHovered ? 10 : 1,
       }}
+      initial={{ x: initialX, opacity: 0 }}
+      animate={{ opacity: isInView ? 1 : 0, x: initialX }}
       onMouseEnter={() => onHover(id)}
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2 }}
     >
-      <motion.div
-        animate={{
-          scale: isHovered ? ANIMATION_SETTINGS.hoverScale : 1,
-          zIndex: isHovered ? 9999 : 1,
-        }}
-        transition={{
-          scale: {
-            duration: ANIMATION_SETTINGS.transitionDuration,
-            ease: "easeOut",
-          },
-        }}
-        className="relative w-full h-full"
-      >
-        <Link href={`/album/${id}`} className="block w-full h-full group">
-          <div className="relative w-full h-full rounded-2xl overflow-hidden bg-neutral-800">
-            <Image
-              src={coverImage}
-              alt={title}
-              width={ANIMATION_SETTINGS.imageSize}
-              height={ANIMATION_SETTINGS.imageSize}
-              className={`object-cover w-full h-full transition-opacity duration-300 ${
-                isLoaded ? "opacity-100" : "opacity-0"
-              }`}
-              onLoad={(event) => {
-                const target = event.target as HTMLImageElement
-                if (target.complete) {
-                  setIsLoaded(true)
-                }
-              }}
-            />
-
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent 
-              opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6"
-            >
-              <h2 className="text-xl font-bold text-white">{title}</h2>
-            </div>
+      <Link href={`/album/${id}`} className="block w-full h-full group">
+        <div className="relative w-full h-full rounded-2xl overflow-hidden bg-neutral-800">
+          <Image
+            src={coverImage}
+            alt={title}
+            fill
+            sizes="400px"
+            className="object-cover transition-all duration-300 group-hover:scale-105"
+            priority={row === 0}
+            quality={80}
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent 
+            opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6"
+          >
+            <h2 className="text-xl font-bold text-white">{title}</h2>
           </div>
-        </Link>
-      </motion.div>
+        </div>
+      </Link>
     </motion.div>
   )
 })
