@@ -5,8 +5,8 @@ export const ANIMATION_SETTINGS = {
   transitionDuration: 0.3,
   hoverScale: 1.05,
   bufferZone: 150,
-  minSpeed: 0.4,
-  maxSpeed: 0.5,
+  minSpeed: 0.2,
+  maxSpeed: 0.25,
 }
 
 export const getRandomDirection = () => {

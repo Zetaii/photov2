@@ -22,48 +22,50 @@ export default function Sidebar2({ categories }: Sidebar2Props) {
   )
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const pathname = usePathname()
-  const sidebarRef = useRef<HTMLDivElement>(null)
   const simpleBarRef = useRef<any>(null)
 
+  // Lock body scroll when sidebar is open
   useEffect(() => {
     if (!isOpen) return
 
-    const mainLenis = (window as any).lenis
-    if (mainLenis) {
-      mainLenis.stop()
+    const lenis = (window as any).lenis
+    if (lenis) {
+      lenis.stop()
     }
 
-    const handleWheel = (e: WheelEvent) => {
-      if (!simpleBarRef.current) return
+    // Prevent main scroll
+    document.body.style.overflow = "hidden"
 
-      const scrollElement = simpleBarRef.current.getScrollElement()
-      if (!scrollElement) return
+    const preventScroll = (e: WheelEvent) => {
+      const target = e.target as HTMLElement
+      const isInsideSidebar = target.closest(".simplebar-content-wrapper")
 
-      const currentScroll = scrollElement.scrollTop
-      const newScroll = currentScroll + e.deltaY
-
-      scrollElement.scrollTo({
-        top: newScroll,
-        behavior: "smooth",
-      })
-
-      e.preventDefault()
+      if (!isInsideSidebar) {
+        e.preventDefault()
+        return false
+      }
     }
 
-    const sidebarElement = sidebarRef.current
-    if (sidebarElement) {
-      sidebarElement.addEventListener("wheel", handleWheel, { passive: false })
-    }
+    window.addEventListener("wheel", preventScroll, { passive: false })
 
     return () => {
-      if (sidebarElement) {
-        sidebarElement.removeEventListener("wheel", handleWheel)
-      }
-      if (mainLenis) {
-        mainLenis.start()
+      window.removeEventListener("wheel", preventScroll)
+      document.body.style.overflow = ""
+      if (lenis) {
+        lenis.start()
       }
     }
   }, [isOpen])
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation()
+
+    if (!simpleBarRef.current) return
+    const scrollElement = simpleBarRef.current.getScrollElement()
+    if (scrollElement) {
+      scrollElement.scrollTop += e.deltaY
+    }
+  }
 
   const sidebarVariants = {
     open: {
@@ -120,11 +122,7 @@ export default function Sidebar2({ categories }: Sidebar2Props) {
         className="fixed top-0 left-0 h-full w-80 pointer-events-auto
           bg-white/95 backdrop-blur-xl border-r border-white/20 shadow-2xl"
       >
-        <SimpleBar
-          className="h-full"
-          autoHide={false}
-          style={{ overflow: "hidden" }}
-        >
+        <div className="h-full flex flex-col">
           <div className="pt-12 pb-4" onWheel={(e) => e.stopPropagation()}>
             <p className="text-black text-center text-2xl font-bold p-4">
               DONNY
@@ -153,37 +151,44 @@ export default function Sidebar2({ categories }: Sidebar2Props) {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-4 space-y-2">
-                    {categories.map((category) => (
-                      <div
-                        key={category.id}
-                        className="relative"
-                        onMouseEnter={() => setHoveredCategory(category)}
-                        onMouseLeave={() => setHoveredCategory(null)}
-                      >
-                        <Link
-                          href={`/album/${category.id}`}
-                          onClick={() => setIsOpen(false)}
-                          className={`block px-4 py-3 rounded-xl transition-all duration-300
-                            hover:bg-black/10
-                            ${
-                              pathname === `/album/${category.id}`
-                                ? "bg-white/20 text-black"
-                                : "text-black/90 hover:text-black"
-                            }`}
+                  <SimpleBar
+                    ref={simpleBarRef}
+                    style={{ maxHeight: "60vh" }}
+                    autoHide={false}
+                    onWheel={handleWheel}
+                  >
+                    <div className="px-4 space-y-2">
+                      {categories.map((category) => (
+                        <div
+                          key={category.id}
+                          className="relative"
+                          onMouseEnter={() => setHoveredCategory(category)}
+                          onMouseLeave={() => setHoveredCategory(null)}
                         >
-                          <h3 className="font-medium truncate">
-                            {category.title}
-                          </h3>
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
+                          <Link
+                            href={`/album/${category.id}`}
+                            onClick={() => setIsOpen(false)}
+                            className={`block px-4 py-3 rounded-xl transition-all duration-300
+                              hover:bg-black/10
+                              ${
+                                pathname === `/album/${category.id}`
+                                  ? "bg-white/20 text-black"
+                                  : "text-black/90 hover:text-black"
+                              }`}
+                          >
+                            <h3 className="font-medium truncate">
+                              {category.title}
+                            </h3>
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  </SimpleBar>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
-        </SimpleBar>
+        </div>
       </motion.div>
 
       {/* Preview Panel */}

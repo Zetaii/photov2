@@ -40,6 +40,13 @@ export default function Home() {
     setLastHoveredId(id)
   }
 
+  const calculateContainerHeight = () => {
+    const itemsPerRow = 3
+    const rowHeight = 600
+    const totalRows = Math.ceil(INITIAL_CATEGORIES.length / itemsPerRow)
+    return totalRows * rowHeight
+  }
+
   if (!isLoaded) {
     return null // or a loading state
   }
@@ -56,7 +63,10 @@ export default function Home() {
           <h2 className="text-xl font-bold text-center mb-16 text-black">
             <a href="/contact"> CONTACT </a>
           </h2>
-          <div className="relative h-[2400px] mb-[100px] overflow-hidden">
+          <div
+            className="relative mb-[100px] overflow-hidden"
+            style={{ height: `${calculateContainerHeight()}px` }}
+          >
             {INITIAL_CATEGORIES.map((category, index) => (
               <SlidingImage
                 key={category.id}
