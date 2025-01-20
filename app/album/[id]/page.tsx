@@ -8,16 +8,17 @@ import { motion } from "framer-motion"
 import { IoArrowBack, IoImages } from "react-icons/io5"
 
 export default function AlbumPage({ params }: { params: { id: string } }) {
-  const album = albums.find((a) => a.id === params.id.split("-")[0])
+  const baseId = params.id.split("-")[0]
+  const album = albums.find((a) => a.id === baseId)
 
   if (!album) {
     return (
-      <div className="min-h-screen bg-white text-white flex items-center justify-center">
+      <div className="min-h-screen bg-white text-black flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl mb-4">Album not found</h1>
           <Link
             href="/"
-            className="text-white/70 hover:text-white transition-colors"
+            className="text-black/70 hover:text-black transition-colors"
           >
             ← Back to Gallery
           </Link>
@@ -25,17 +26,6 @@ export default function AlbumPage({ params }: { params: { id: string } }) {
       </div>
     )
   }
-
-  // Group images into pairs
-  const imagePairs = album.images.reduce<Array<typeof album.images>>(
-    (result, item, index) => {
-      if (index % 2 === 0) {
-        result.push(album.images.slice(index, index + 2))
-      }
-      return result
-    },
-    []
-  )
 
   return (
     <div className="min-h-screen bg-white to-zinc-950">
@@ -63,68 +53,46 @@ export default function AlbumPage({ params }: { params: { id: string } }) {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="pt-28 px-6 pb-20">
-        <div className="max-w-5xl mx-auto">
-          {/* Album Info */}
-          <motion.div
-            className="mb-16 flex flex-col items-center text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex flex-col items-center gap-12">
-              {/* Cover Image */}
-
-              {/* Album Details */}
-              <div className="flex flex-col items-center space-y-6 max-w-2xl">
-                <div className="flex items-center gap-4 mb-2"></div>
+      {/* Main content */}
+      <main className="pt-32 pb-20 px-6">
+        <motion.div
+          className="max-w-3xl mx-auto flex flex-col gap-20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {album.images.map((image, index) => (
+            <motion.div
+              key={image.id}
+              className="w-full group relative aspect-[4/5] rounded-2xl overflow-hidden
+                shadow-lg hover:shadow-2xl transition-all duration-500
+                hover:border-white/20 bg-white/5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.1 * (index + 1),
+              }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <Image
+                src={image.url}
+                alt={image.title}
+                fill
+                className="object-cover w-full h-full transition-all duration-500 
+                  group-hover:scale-110 group-hover:brightness-110"
+                sizes="(max-width: 1200px) 100vw, 1200px"
+              />
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 
+                opacity-0 group-hover:opacity-100 transition-all duration-300
+                flex items-end p-6"
+              >
+                <h2 className="text-2xl font-bold text-white">{image.title}</h2>
               </div>
-            </div>
-          </motion.div>
-
-          {/* Image Grid */}
-          <motion.div
-            className="space-y-8 mt-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {imagePairs.map((pair, pairIndex) => (
-              <div key={pairIndex} className="flex gap-8 mt-2 justify-center">
-                {pair.map((image, index) => (
-                  <motion.div
-                    key={image.id}
-                    className="w-[400px] group relative aspect-[3/2] rounded-2xl overflow-hidden
-                      shadow-lg hover:shadow-2xl transition-all duration-500
-                        hover:border-white/20 bg-white/5"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.6,
-                      delay: 0.1 * (pairIndex * 2 + index + 1),
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <Image
-                      src={image.url}
-                      alt={image.title}
-                      width={800}
-                      height={533}
-                      className="object-cover w-full h-full transition-all duration-500 
-                        group-hover:scale-110 mt-2 group-hover:brightness-110"
-                    />
-                    <div
-                      className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 
-                      opacity-0 group-hover:opacity-100 transition-all duration-300
-                      flex items-end p-6"
-                    ></div>
-                  </motion.div>
-                ))}
-              </div>
-            ))}
-          </motion.div>
-        </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </main>
     </div>
   )

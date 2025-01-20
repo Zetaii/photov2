@@ -12,7 +12,7 @@ export default function Footer() {
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 40,
+        zIndex: 100,
         contain: "paint layout",
         transform: "translateZ(0)",
       }}

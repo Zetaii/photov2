@@ -1,5 +1,23 @@
 export const albums = [
   {
+    id: "winter",
+    title: "Winter",
+    description: "Snowy landscapes and frosty scenes",
+    coverImage: "https://images.unsplash.com/photo-1418985991508-e47386d96a71",
+    images: [
+      {
+        id: "winter-1",
+        title: "Snow Covered",
+        url: "https://images.unsplash.com/photo-1418985991508-e47386d96a71",
+      },
+      {
+        id: "winter-2",
+        title: "Winter Forest",
+        url: "https://images.unsplash.com/photo-1483921020237-2ff51e8e4b22",
+      },
+    ],
+  },
+  {
     id: "nature",
     title: "Nature",
     description: "Capturing the beauty of the natural world",

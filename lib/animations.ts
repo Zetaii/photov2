@@ -1,13 +1,15 @@
-import { useMemo } from "react"
-import { ANIMATION_SETTINGS } from "@/app/constants"
+import { ANIMATION_SETTINGS } from "@/app/constants/index"
 
 export const calculateNewPosition = (
   currentX: number,
   directionX: number,
   windowWidth: number
 ) => {
-  const buffer = ANIMATION_SETTINGS.imageSize * 0.5
-  let newX = currentX + directionX * ANIMATION_SETTINGS.speed
+  const buffer = ANIMATION_SETTINGS.imageSize * 0.02
+  const speed =
+    ANIMATION_SETTINGS.minSpeed +
+    Math.random() * (ANIMATION_SETTINGS.maxSpeed - ANIMATION_SETTINGS.minSpeed)
+  let newX = currentX + directionX * speed
 
   if (directionX > 0 && newX >= windowWidth + buffer) {
     newX = -ANIMATION_SETTINGS.imageSize - buffer
